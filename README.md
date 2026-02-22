@@ -151,4 +151,4 @@ This mapping ensures that benchmark results are directly usable in safety cases 
 
 ---
 
-Built by [BRKMYR](https://github.com/BRKMYR) — Lead Product Manager with a background in robotics and Physical AI.
+Built by [BRKMYR](https://github.com/BRKMYR)
