@@ -1,4 +1,6 @@
-# av-safety-benchmark
+# AV Safety Benchmark
+
+**Status: Planned — Q3 2026**
 
 An AI safety evaluation framework for autonomous driving. It provides structured benchmark datasets, adversarial scenario generators, and a standardized safety metrics suite to evaluate how well autonomous driving systems handle safety-critical situations — from routine edge cases to [redacted] boundary violations.
 
