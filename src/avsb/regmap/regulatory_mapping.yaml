@@ -1,0 +1,148 @@
+schema_version: "1.0"
+disclaimer: >
+  Informative traceability only. Nothing in this mapping constitutes a
+  conformity assessment, certification, ASIL/SOTIF classification, or legal
+  advice. Clause references identify where each artifact is relevant to a
+  standard's subject matter, not evidence of compliance with it.
+entries:
+  - id: map-ttc
+    kind: metric
+    target: ttc_min_s
+    title: "Time-to-Collision (minimum)"
+    references:
+      - standard: "ISO 21448:2022 (SOTIF)"
+        clause: "Clause 7; Annex C.2"
+        relation: informative
+        note: "Surrogate indicator for evaluation of known hazardous scenarios."
+      - standard: "UL 4600:2023"
+        clause: "Section 8 (Risk Assessment), 16 (Metrics & SPIs)"
+        relation: informative
+        note: "Candidate safety performance indicator (SPI) with defined threshold."
+      - standard: "EU AI Act (Reg. 2024/1689)"
+        clause: "Art. 9 (risk management), Art. 15 (accuracy & robustness)"
+        relation: informative
+        note: "Quantitative evidence usable in a risk-management file."
+  - id: map-pet
+    kind: metric
+    target: pet_min_s
+    title: "Post-Encroachment Time (minimum)"
+    references:
+      - standard: "ISO 21448:2022 (SOTIF)"
+        clause: "Annex C.2"
+        relation: informative
+        note: "Complementary surrogate for conflict severity in shared conflict zones."
+      - standard: "UL 4600:2023"
+        clause: "Section 16 (Metrics & SPIs)"
+        relation: informative
+        note: "Candidate SPI for spatiotemporal separation analysis."
+  - id: map-dmin
+    kind: metric
+    target: d_min_m
+    title: "Minimum distance margin"
+    references:
+      - standard: "ISO 21448:2022 (SOTIF)"
+        clause: "Clause 7.4; Annex C"
+        relation: informative
+        note: "Direct measure of geometric safety margin under known scenarios."
+      - standard: "UL 4600:2023"
+        clause: "Section 8, 16"
+        relation: informative
+        note: "Distance-margin SPI usable as an acceptance-criterion input."
+  - id: map-collision
+    kind: metric
+    target: collision
+    title: "Collision flag and delta-v severity"
+    references:
+      - standard: "ISO 26262-3:2018"
+        clause: "Clause 6 (HARA)"
+        relation: informative
+        note: "Severity input dimension for hazard analysis and risk assessment. No ASIL is derived here."
+      - standard: "ISO 21448:2022 (SOTIF)"
+        clause: "Clause 6; Annex F"
+        relation: informative
+        note: "Terminal outcome metric for scenario evaluation."
+      - standard: "UL 4600:2023"
+        clause: "Section 8, 17 (Software & System Engineering)"
+        relation: informative
+        note: "Loss-event and severity classification input."
+  - id: map-comfort
+    kind: metric
+    target: hard_brake_fraction
+    title: "Hard-braking / intervention proxy"
+    references:
+      - standard: "UL 4600:2023"
+        clause: "Section 16 (Metrics & SPIs)"
+        relation: informative
+        note: "Operator-comfort and intervention SPI; -4 m/s^2 threshold from naturalistic-driving literature."
+      - standard: "EU AI Act (Reg. 2024/1689)"
+        clause: "Art. 15 (robustness)"
+        relation: informative
+        note: "Behavior-quality indicator informing robustness reporting."
+  - id: map-family-cutin
+    kind: family
+    target: cut_in
+    title: "Aggressive cut-in scenario family"
+    references:
+      - standard: "ISO 21448:2022 (SOTIF)"
+        clause: "Clause 7.2; Annex F"
+        relation: informative
+        note: "Known potentially hazardous scenario class; parameterized coverage."
+      - standard: "ISO 26262-3:2018"
+        clause: "Clause 6 (HARA inputs)"
+        relation: informative
+        note: "Situation catalog input to hazard analysis. No ASIL is derived here."
+      - standard: "UL 4600:2023"
+        clause: "Section 8 (Risk Assessment)"
+        relation: informative
+        note: "Operational-scenario coverage evidence."
+  - id: map-family-ped
+    kind: family
+    target: ped_occluded
+    title: "Occluded pedestrian emergence scenario family"
+    references:
+      - standard: "ISO 21448:2022 (SOTIF)"
+        clause: "Clauses 6 & 7; Annex F"
+        relation: informative
+        note: "Vulnerable-road-user hazard class; occlusion is a canonical SOTIF trigger."
+      - standard: "UL 4600:2023"
+        clause: "Section 8, 17"
+        relation: informative
+        note: "Scenario-based assessment for pedestrian conflict."
+      - standard: "EU AI Act (Reg. 2024/1689)"
+        clause: "Annex III (high-risk uses); Art. 9"
+        relation: informative
+        note: "Risk-management evidence for road safety-critical operation."
+  - id: map-family-weather
+    kind: family
+    target: weather_ramp
+    title: "[redacted] weather-degradation ramp scenario family"
+    references:
+      - standard: "ISO 21448:2022 (SOTIF)"
+        clause: "Clause 6 ([redacted]/triggering conditions)"
+        relation: informative
+        note: "Explicit [redacted]-boundary and triggering-condition coverage."
+      - standard: "UL 4600:2023"
+        clause: "Section 8 (Risk Assessment)"
+        relation: informative
+        note: "[redacted]-boundary evaluation informing autonomy assumptions."
+      - standard: "EU AI Act (Reg. 2024/1689)"
+        clause: "Art. 10 (data governance), Art. 15"
+        relation: informative
+        note: "Robustness evaluation under environmental degradation."
+  - id: map-family-hardbrake
+    kind: family
+    target: hard_brake
+    title: "Lead-vehicle hard-brake scenario family"
+    references:
+      - standard: "ISO 26262-4:2018"
+        clause: "Clause 6 (System-level validation inputs)"
+        relation: informative
+        note: "Longitudinal-conflict validation input. No ASIL is derived here."
+      - standard: "ISO 21448:2022 (SOTIF)"
+        clause: "Clause 7; Annex F"
+        relation: informative
+        note: "Known hazardous scenario class with parameter sweep."
+      - standard: "UL 4600:2023"
+        clause: "Section 8, 16"
+        relation: informative
+        note: "Longitudinal safety-envelope evaluation."
