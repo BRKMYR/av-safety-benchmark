@@ -1,0 +1,64 @@
+actors:
+- actor_id: cutter
+  initial:
+    speed_mps: 17.0
+    x_m: 22.0
+    y_m: 5.25
+    yaw_rad: 0.0
+  kind: vehicle
+  length_m: 4.5
+  mass_kg: 1500.0
+  phases:
+  - accel_mps2: 0.0
+    lateral_speed_mps: 0.0
+    target_speed_mps: 17.0
+    target_y_m: null
+    trigger:
+      at_time_s: 0.0
+      ego_x_m: null
+      gap_m: null
+      type: time
+  - accel_mps2: 0.0
+    lateral_speed_mps: 1.2
+    target_speed_mps: 17.0
+    target_y_m: 1.75
+    trigger:
+      at_time_s: null
+      ego_x_m: null
+      gap_m: 14.0
+      type: ego_gap
+  width_m: 1.9
+description: Adjacent-lane vehicle cuts in ahead of ego with 14.0 m gap, closing 3.0 m/s
+dt_s: 0.1
+duration_s: 15.0
+ego:
+  initial:
+    speed_mps: 20.0
+    x_m: 0.0
+    y_m: 1.75
+    yaw_rad: 0.0
+  lane: 0
+  length_m: 4.5
+  mass_kg: 1500.0
+  target_speed_mps: 20.0
+  width_m: 1.9
+environment:
+  friction_end: 0.9
+  friction_start: 0.9
+  visibility_end_m: 200.0
+  visibility_start_m: 200.0
+family: cut_in
+parameters:
+  initial_gap_m: 22.0
+  lateral_speed_mps: 1.2
+  speed_delta_mps: -3.0
+  trigger_gap_m: 14.0
+road:
+  lane_width_m: 3.5
+  length_m: 400.0
+  n_lanes: 2
+  speed_limit_mps: 22.2
+scenario_id: core-cutin-0001
+schema_version: '1.0'
+seed: 42
+suite: core
