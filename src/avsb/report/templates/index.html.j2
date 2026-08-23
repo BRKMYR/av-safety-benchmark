@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>av-safety-benchmark  {{ suite }}</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+         max-width: 1100px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+  h1, h2, h3 { margin-top: 1.6rem; }
+  table { border-collapse: collapse; width: 100%; margin: 0.75rem 0; }
+  th, td { border: 1px solid #ccc; padding: 6px 10px; font-size: 0.9rem; text-align: left; }
+  th { background: #f5f5f5; }
+  .rank-1 { background: #e8f5e9; }
+  .rank-last { background: #ffebee; }
+  .disclaimer { background: #fff8e1; border: 1px solid #f0c36d;
+                padding: 0.75rem 1rem; margin: 1rem 0; font-size: 0.9rem; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  img { max-width: 100%; height: auto; border: 1px solid #ddd; }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; }
+  footer { margin-top: 3rem; font-size: 0.85rem; color: #555; border-top: 1px solid #ccc; padding-top: 1rem; }
+</style>
+</head>
+<body>
+
+<h1>av-safety-benchmark  suite: {{ suite }}</h1>
+<p>
+  System-agnostic AV safety benchmark. Any stack that produces trajectory logs
+  in the JSONL contract can be scored; the simulator here is just one producer.
+</p>
+
+<h2>Leaderboard</h2>
+<img src="plots/leaderboard.png" alt="leaderboard">
+<table>
+  <thead>
+    <tr>
+      <th>Rank</th><th>Planner</th><th>Composite</th>
+      {% for fam in families %}<th>{{ fam }}</th>{% endfor %}
+      <th>Collisions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in leaderboard %}
+    <tr class="{{ 'rank-1' if loop.first else ('rank-last' if loop.last else '') }}">
+      <td>{{ loop.index }}</td>
+      <td><code>{{ row.planner }}</code></td>
+      <td>{{ '%.2f'|format(row.composite) }}</td>
+      {% for fam in families %}
+      <td>{{ '%.2f'|format(row.family_scores.get(fam, 0.0)) }}</td>
+      {% endfor %}
+      <td>{{ row.collisions }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Family breakdown</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Planner</th><th>Family</th><th>Score</th><th>N</th>
+      <th>Collisions</th><th>Worst scenario</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in family_rows %}
+    <tr>
+      <td><code>{{ row.planner }}</code></td>
+      <td>{{ row.family }}</td>
+      <td>{{ '%.2f'|format(row.score) }}</td>
+      <td>{{ row.n }}</td>
+      <td>{{ row.collisions }}</td>
+      <td><code>{{ row.worst_scenario_id }}</code></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Worst-case gallery</h2>
+<div class="grid">
+{% for item in worst_cases %}
+  <div>
+    <h3>{{ item.family }}  {{ item.planner }}</h3>
+    <p><code>{{ item.scenario_id }}</code>  score {{ '%.2f'|format(item.score) }}  {{ item.severity_tier }}</p>
+    <img src="{{ item.bev_png }}" alt="BEV">
+    <img src="{{ item.ttc_png }}" alt="TTC(t)">
+  </div>
+{% endfor %}
+</div>
+
+<h2>Metric distributions</h2>
+<div class="grid">
+  {% for png in distributions %}
+    <img src="{{ png }}" alt="distribution">
+  {% endfor %}
+</div>
+
+<h2>Regulatory traceability (informative only)</h2>
+<div class="disclaimer">{{ regmap.disclaimer }}</div>
+<table>
+  <thead>
+    <tr><th>Artifact</th><th>Kind</th><th>Standard</th><th>Clause</th><th>Note</th></tr>
+  </thead>
+  <tbody>
+    {% for entry in regmap.entries %}
+      {% for ref in entry.references %}
+      <tr>
+        {% if loop.first %}
+          <td rowspan="{{ entry.references|length }}"><strong>{{ entry.title }}</strong><br><code>{{ entry.target }}</code></td>
+          <td rowspan="{{ entry.references|length }}">{{ entry.kind }}</td>
+        {% endif %}
+        <td>{{ ref.standard }}</td>
+        <td>{{ ref.clause }}</td>
+        <td>{{ ref.note }}</td>
+      </tr>
+      {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Methodology (metric formulas)</h2>
+<ul>
+  <li><strong>d_min</strong>: min over steps and non-static actors of
+    <code>||p_a  p_e||  (r_ego + r_a)</code>.</li>
+  <li><strong>Collision</strong>: any step where <code>d_a  0</code>; delta-v uses a perfectly-plastic
+    closing-speed model <code>delta_v = (m_a / (m_e + m_a))  ||v_e  v_a||</code>.</li>
+  <li><strong>TTC</strong> (2D closing-speed): with <code>r = p_a  p_e</code>,
+    <code>v_rel = v_a  v_e</code>, <code>c = (r  v_rel)/||r||</code>,
+    <code>TTC = d_a / c</code> when <code>c &gt; 0.1</code> m/s.</li>
+  <li><strong>PET</strong>: grid-cell (0.5 m) post-encroachment time over disjoint occupancy intervals.</li>
+  <li><strong>Hard-brake proxy</strong>: fraction of steps and runs where <code>accel_cmd  -4.0</code> m/s.</li>
+</ul>
+
+<footer>
+  Metrics are computed offline from the JSONL trajectory logs; the engine is a
+  10 Hz kinematic bicycle simulator with scripted adversary actors and a
+  visibility-filtered observation. Every actor is modeled as a disc for
+  distance metrics; vehicle radius equals length/2 (deliberately conservative).
+  Regulatory mapping above is informative only and does not constitute
+  certification, conformity assessment, or ASIL/SOTIF classification.
+</footer>
+
+</body>
+</html>

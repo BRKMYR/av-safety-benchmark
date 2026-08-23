@@ -1,0 +1,5 @@
+"""Static HTML report (spec 5.7, 5.5, 11)."""
+
+from avsb.report.render import build_report
+
+__all__ = ["build_report"]
