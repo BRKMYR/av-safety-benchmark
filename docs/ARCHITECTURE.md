@@ -31,6 +31,7 @@ Build the Python package `src/avsb/` containing exactly:
   - `avsb generate --suite core --seed 42`
   - `avsb run --suite core --planner all`
   - `avsb report --suite core --out reports/core/`
+  - `avsb plots --suite core --out reports/core/plots_all/` (BEV PNG per (scenario, planner) pair; `--scenarios-filter id1,id2` restricts it)
   - `avsb export-xosc --suite core --family cut_in --out exports/xosc/`
 - **`tests/`** — pytest suite per §10.
 - Packaging: `pyproject.toml` (setuptools, `src/` layout), `README` untouched.

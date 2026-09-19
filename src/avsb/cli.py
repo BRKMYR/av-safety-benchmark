@@ -100,6 +100,27 @@ def _cmd_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_plots(args: argparse.Namespace) -> int:
+    from avsb.report.render import build_all_bev_plots
+
+    ids: list[str] | None = None
+    if args.scenarios_filter:
+        ids = [sid.strip() for sid in args.scenarios_filter.split(",") if sid.strip()]
+    try:
+        paths = build_all_bev_plots(
+            suite=args.suite,
+            runs_root=Path(args.runs),
+            scenarios_root=Path(args.scenarios),
+            out_dir=Path(args.out),
+            scenario_ids=ids,
+        )
+    except ValueError as e:
+        print(f"plots: {e}", file=sys.stderr)
+        return 2
+    print(f"plots: wrote {len(paths)} BEV plots into {args.out}")
+    return 0
+
+
 def _cmd_export_xosc(args: argparse.Namespace) -> int:
     from avsb.export.xosc import UnsupportedFamilyError, export_suite
 
@@ -117,7 +138,7 @@ def _cmd_export_xosc(args: argparse.Namespace) -> int:
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="avsb",
-        description="av-safety-benchmark CLI: generate, run, report, export-xosc.",
+        description="av-safety-benchmark CLI: generate, run, report, plots, export-xosc.",
     )
     p.add_argument("--version", action="version", version=f"avsb {__version__}")
     subs = p.add_subparsers(dest="cmd", required=True)
@@ -142,6 +163,20 @@ def _build_parser() -> argparse.ArgumentParser:
     rep.add_argument("--out", default="reports/core")
     rep.add_argument("--screenshots", default="docs/screenshots")
     rep.set_defaults(func=_cmd_report)
+
+    pp = subs.add_parser(
+        "plots", help="Render a BEV plot for every (scenario, planner) pair"
+    )
+    pp.add_argument("--suite", default="core")
+    pp.add_argument("--runs", default="runs")
+    pp.add_argument("--scenarios", default="scenarios")
+    pp.add_argument("--out", default="reports/plots_all")
+    pp.add_argument(
+        "--scenarios-filter",
+        default=None,
+        help="Comma separated list of scenario ids to restrict rendering to",
+    )
+    pp.set_defaults(func=_cmd_plots)
 
     ep = subs.add_parser("export-xosc", help="Export scenarios to OpenSCENARIO XML")
     ep.add_argument("--suite", default="core")

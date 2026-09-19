@@ -174,3 +174,50 @@ def build_report(
         shutil.copyfile(worst_cutin_idm_ttc, screenshots_dir / "worst_cutin_ttc.png")
 
     return index_path
+
+
+def _planner_dirs(runs_root: Path, suite: str) -> list[Path]:
+    root = runs_root / suite
+    if not root.is_dir():
+        return []
+    return sorted([p for p in root.iterdir() if p.is_dir()])
+
+
+def build_all_bev_plots(
+    suite: str,
+    runs_root: Path | str = "runs",
+    scenarios_root: Path | str = "scenarios",
+    out_dir: Path | str = "reports/plots_all",
+    scenario_ids: list[str] | None = None,
+) -> list[Path]:
+    """Render one BEV PNG per (scenario, planner) pair of a suite.
+
+    Same renderer, style and naming as the report gallery
+    (``bev_<family>_<planner>_<scenario_id>.png``), but for every pair rather
+    than only the worst case per family. Deterministic: inputs are sorted and
+    the plot itself is a pure function of (log, scenario).
+    """
+    runs_root = Path(runs_root)
+    scenarios_root = Path(scenarios_root)
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    wanted = set(scenario_ids) if scenario_ids else None
+    scenarios = sorted(load_suite(scenarios_root / suite), key=lambda s: s.scenario_id)
+    if wanted is not None:
+        scenarios = [s for s in scenarios if s.scenario_id in wanted]
+        missing = wanted - {s.scenario_id for s in scenarios}
+        if missing:
+            raise ValueError(f"unknown scenario ids: {sorted(missing)}")
+
+    written: list[Path] = []
+    for planner_dir in _planner_dirs(runs_root, suite):
+        planner = planner_dir.name
+        for scen in scenarios:
+            log_path = planner_dir / f"{scen.scenario_id}.jsonl"
+            if not log_path.is_file():
+                continue
+            log = TrajectoryLog.read(log_path)
+            name = f"bev_{scen.family}_{planner}_{scen.scenario_id}.png"
+            written.append(bev_plot(log, scen, out_dir / name))
+    return written
