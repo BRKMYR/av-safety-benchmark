@@ -61,6 +61,14 @@ def generate_family(
     for i in range(1, gen.count + 1):
         params = gen.sample(rng)
         scen = gen.build(params, i, seed)
+        # Generators build under the default suite label. Relabel here so that a
+        # holdout suite is the same draw under a different name.
+        scen = scen.model_copy(
+            update={
+                "suite": suite,
+                "scenario_id": _scenario_id(suite, gen.family, i),
+            }
+        )
         p = root / f"{scen.scenario_id}.yaml"
         write_yaml(p, scen)
         paths.append(p)

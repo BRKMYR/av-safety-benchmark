@@ -15,7 +15,7 @@ from avsb.schema.scenario import FamilyLit
 
 
 class MetricSet(BaseModel):
-    """Exactly the 11 metric fields from spec 5.4.
+    """The 12 metric fields of spec 5.4, schema 1.1.
 
     `ttc_min_s` and `pet_min_s` may be `None`, meaning "no closing conflict"
     and "no shared conflict zone" respectively. Scoring treats both as +inf.
@@ -34,6 +34,9 @@ class MetricSet(BaseModel):
     severity_index: int = Field(ge=0, le=3, default=0)
     hard_brake_fraction: float = Field(ge=0.0, le=1.0, default=0.0)
     hard_brake_events: int = Field(ge=0, default=0)
+    #: Mean ego speed over the run divided by `ego.target_speed_mps` (M12,
+    #: schema 1.1). None when the target speed is zero.
+    mean_speed_ratio: float | None = Field(ge=0.0, default=None)
 
 
 class ScenarioResult(BaseModel):
@@ -41,7 +44,7 @@ class ScenarioResult(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    schema_version: Literal["1.0"] = "1.0"
+    schema_version: Literal["1.0", "1.1"] = "1.1"
     scenario_id: str
     suite: str
     family: FamilyLit

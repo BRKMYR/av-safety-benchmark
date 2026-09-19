@@ -20,6 +20,27 @@ def _cmd_generate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _write_run_manifest(out_root: Path, suite: str, seed: int | None) -> Path:
+    """Write `manifest.json` for one suite: when it ran, from which seed, with which version.
+
+    The assurance gate reads this file, so the timestamp is UTC with a `Z`.
+    """
+    import json
+    from datetime import datetime, timezone
+
+    manifest = {
+        "schema_version": "1.1",
+        "suite": suite,
+        "seed": seed,
+        "avsb_version": __version__,
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    path = out_root / suite / "manifest.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(manifest, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+    return path
+
+
 def _cmd_run(args: argparse.Namespace) -> int:
     from avsb.engine.simulator import run_scenario
     from avsb.metrics.compute import compute_metrics
@@ -58,7 +79,10 @@ def _cmd_run(args: argparse.Namespace) -> int:
             result_path = log_path.with_suffix(".result.json")
             write_json(result_path, result)
             n_pairs += 1
+    seed = scenarios[0].seed if scenarios else None
+    manifest_path = _write_run_manifest(out_root, args.suite, seed)
     print(f"run: executed {n_pairs} (scenario, planner) pairs into {out_root}")
+    print(f"run: wrote {manifest_path}")
     return 0
 
 

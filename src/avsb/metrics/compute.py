@@ -5,6 +5,7 @@ from __future__ import annotations
 from avsb.metrics.collision import collision_metrics, min_distance
 from avsb.metrics.comfort import hard_brake
 from avsb.metrics.pet import pet_min
+from avsb.metrics.speed import mean_speed_ratio
 from avsb.metrics.ttc import ttc_min
 from avsb.schema.result import MetricSet
 from avsb.schema.scenario import ScenarioDefinition
@@ -18,6 +19,7 @@ def compute_metrics(log: TrajectoryLog, scen: ScenarioDefinition) -> MetricSet:
     d, d_t = min_distance(log, scen)
     coll, coll_t, delta_v, sev = collision_metrics(log, scen)
     hb_frac, hb_events = hard_brake(log)
+    speed_ratio = mean_speed_ratio(log, scen)
 
     # Clip d_min at the negative combined radius floor per spec (report clipping
     # is at >= -R; unclipped internally, but we report the raw value here since
@@ -34,4 +36,5 @@ def compute_metrics(log: TrajectoryLog, scen: ScenarioDefinition) -> MetricSet:
         severity_index=int(sev),
         hard_brake_fraction=float(hb_frac),
         hard_brake_events=int(hb_events),
+        mean_speed_ratio=(None if speed_ratio is None else float(speed_ratio)),
     )
