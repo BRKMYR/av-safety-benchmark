@@ -115,16 +115,16 @@ entries:
   - id: map-family-weather
     kind: family
     target: weather_ramp
-    title: "[redacted] weather-degradation ramp scenario family"
+    title: "Weather-degradation ramp scenario family"
     references:
       - standard: "ISO 21448:2022 (SOTIF)"
-        clause: "Clause 6 ([redacted]/triggering conditions)"
+        clause: "Clause 6 (triggering conditions)"
         relation: informative
-        note: "Explicit [redacted]-boundary and triggering-condition coverage."
+        note: "Explicit triggering-condition coverage for degrading weather."
       - standard: "UL 4600:2023"
         clause: "Section 8 (Risk Assessment)"
         relation: informative
-        note: "[redacted]-boundary evaluation informing autonomy assumptions."
+        note: "Degraded-weather evaluation informing autonomy assumptions."
       - standard: "EU AI Act (Reg. 2024/1689)"
         clause: "Art. 10 (data governance), Art. 15"
         relation: informative
