@@ -1,5 +1,7 @@
 # AV Safety Benchmark
 
+[![tests](https://github.com/BRKMYR/av-safety-benchmark/actions/workflows/tests.yml/badge.svg)](https://github.com/BRKMYR/av-safety-benchmark/actions/workflows/tests.yml)
+
 A deterministic safety scorecard for the planning software of an autonomous vehicle.
 Sixty scenarios, three reference planners, one composite score per planner, and a
 mapping to safety standards that is marked informative on every line.
